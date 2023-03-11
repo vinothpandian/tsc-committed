@@ -20,6 +20,7 @@
   "author": "Vinoth Pandian",
   "license": "MIT",
   "devDependencies": {
+    "@tsconfig/recommended": "^1.0.2",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.15.0",
     "eslint": "^8.36.0",
