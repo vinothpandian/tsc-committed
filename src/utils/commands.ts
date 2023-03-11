@@ -1,6 +1,6 @@
 import { execa, ExecaError } from "execa";
-import { compact, findLastIndex, split } from "lodash-es";
-import { logError, logInfo } from "./logger";
+import { compact, split } from "lodash-es";
+import { logError, logInfo, logSuccess } from "./logger";
 
 export async function getModifiedFilesListFromGit(
   baseBranch: string
@@ -16,4 +16,24 @@ export async function getModifiedFilesListFromGit(
   }
 
   return [];
+}
+
+export async function getTscErrorFiles() {
+  try {
+    await execa("tsc", ["--pretty"]);
+
+    // If no errors are found, the command won't throw an error
+    logSuccess("No typescript errors found.");
+    return [];
+  } catch (e) {
+    // TSC errors are printed to stdout as it is a pretty command
+    const { stdout } = e as ExecaError;
+
+    const errorsFoundLine = /Found \d+ errors? in (.*)/s;
+
+    const match = stdout.match(errorsFoundLine);
+    const matchedLines = match?.[1] ?? "";
+
+    return split(matchedLines, "\n");
+  }
 }
