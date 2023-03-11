@@ -1,13 +1,35 @@
-import { filter } from "lodash-es";
+import { compact, filter, map, sortBy, uniq } from "lodash-es";
 
-export async function getFilteredFiles(
+const composeFileMatcherRegex = (rootDir: string, extensions: string[]) => {
+  const sortedExtensions = sortBy(extensions, (ext) => -ext.length);
+
+  return `${rootDir}.*\\.(${sortedExtensions.join("|")})`;
+};
+
+export async function getFilteredGitFiles(
   files: string[],
   rootDir = "src",
   extensions = ["ts", "tsx"]
 ) {
-  const extensionMatcher = new RegExp(
-    `^${rootDir}.*\\.(${extensions.join("|")})$`
+  const matcher = composeFileMatcherRegex(rootDir, extensions);
+  const regExp = new RegExp(`^${matcher}$`);
+  const filePaths = filter(files, (file) => regExp.test(file));
+  return uniq(compact(filePaths));
+}
+
+export async function getFilteredTscFiles(
+  files: string[],
+  rootDir = "src",
+  extensions = ["ts", "tsx"]
+) {
+  const matcher = composeFileMatcherRegex(rootDir, extensions);
+
+  const extensionMatcher = new RegExp(`^.*(${matcher})\x1B.*$`, "i");
+
+  const filePaths = map(
+    files,
+    (line) => extensionMatcher.exec(line)?.[1] ?? null
   );
 
-  return filter(files, (file) => extensionMatcher.test(file));
+  return uniq(compact(filePaths));
 }
