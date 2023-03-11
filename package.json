@@ -2,17 +2,32 @@
   "name": "tsc-staged",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsup --watch --format cjs,esm",
+    "build": "tsup --format cjs,esm",
+    "lint": "eslint --ext .ts src",
+    "format": "prettier --write src",
+    "prepush": "yarn lint",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "Vinoth Pandian",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.15.0",
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-typescript-prettier": "^5.0.0",
     "execa": "^7.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.4",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.src": "prettier --write"
   }
 }
