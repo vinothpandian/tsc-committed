@@ -1,0 +1,20 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}"
+  },
+  "github": {
+    "release": true,
+    "web": true,
+    "assets": ["dist/*"]
+  },
+  "hooks": {
+    "after:bump": "pnpm build",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  "npm": {
+    "publish": true,
+    "access": "public",
+    "release": true,
+    "skipChecks": true
+  }
+}
