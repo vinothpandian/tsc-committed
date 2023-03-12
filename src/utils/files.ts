@@ -8,8 +8,8 @@ const composeFileMatcherRegex = (rootDir: string, extensions: string[]) => {
 
 export function getFilteredGitFiles(
   files: string[],
-  rootDir = "src",
-  extensions = ["ts", "tsx"]
+  rootDir: string,
+  extensions: string[]
 ) {
   const matcher = composeFileMatcherRegex(rootDir, extensions);
   const regExp = new RegExp(`^${matcher}$`);
@@ -19,8 +19,8 @@ export function getFilteredGitFiles(
 
 export function getFilteredTscFiles(
   files: string[],
-  rootDir = "src",
-  extensions = ["ts", "tsx"]
+  rootDir: string,
+  extensions: string[]
 ) {
   const matcher = composeFileMatcherRegex(rootDir, extensions);
 

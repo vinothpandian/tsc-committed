@@ -1,98 +1,61 @@
 #! /usr/bin/env node
 import figlet from "figlet";
-import { forEach, intersection, isEmpty, size } from "lodash-es";
-import * as process from "process";
-import { getModifiedFilesListFromGit, getTscErrorFiles } from "./commands";
-import {
-  getFilteredGitFiles,
-  getFilteredTscFiles,
-  logError,
-  logInfo,
-  logSuccess,
-} from "./utils";
-import {
-  spinnerError,
-  spinnerSuccess,
-  updateSpinnerText,
-} from "./utils/spinner";
+import { Command } from "commander";
+import { isEmpty } from "lodash-es";
+import { tscStaged } from "./lib";
+import { logError, logInfo } from "./utils";
 
-async function getFilesFromGit(
-  baseBranch: string,
-  projectDir: string,
-  rootDir: string,
-  extensions: string[]
-) {
-  const gitFiles = await getModifiedFilesListFromGit(baseBranch, projectDir);
-  return getFilteredGitFiles(gitFiles, rootDir, extensions);
-}
-async function getFilesFromTsc(
-  projectDir: string,
-  rootDir: string,
-  extensions: string[]
-) {
-  const tscFiles = await getTscErrorFiles(projectDir);
-  return getFilteredTscFiles(tscFiles, rootDir, extensions);
-}
+console.log(figlet.textSync("TSC Staged"));
+const program = new Command("tsc-staged");
 
-async function main() {
-  const projectDir = "/Users/vinoth/Projects/remix-jokes";
-  const rootDir = "app";
-  const extensions = ["ts", "tsx"];
-  const baseBranch = "main";
+program
+  .version("0.0.1")
+  .description("A CLI tool to report tsc errors on staged files in a git repo")
+  .option(
+    "-p, --projectDir <projectDir>",
+    "Project directory - By default current directory",
+    process.cwd()
+  )
+  .option("-r, --rootDir <rootDir>", "Root directory", "src")
+  .option("-b, --baseBranch <baseBranch>", "Base branch", "main")
+  .option("-e, --extensions <extensions>", "File extensions", "ts,tsx")
+  .option("-v, --verbose", "Verbose mode", false)
+  .action(
+    async ({
+      projectDir,
+      rootDir,
+      baseBranch,
+      extensions: extensionsString,
+      verbose: debug,
+    }) => {
+      const extensions = extensionsString.split(",");
 
-  updateSpinnerText("Compiling Typescript files...");
-  const filteredTscFiles = await getFilesFromTsc(
-    projectDir,
-    rootDir,
-    extensions
+      if (isEmpty(extensions)) {
+        logError("Please provide a comma separated list of file extensions");
+        process.exit(1);
+      }
+
+      if (debug) {
+        logInfo("Debug mode enabled");
+
+        logInfo("Arguments passed to tsc-staged:");
+        console.table({
+          projectDir,
+          baseBranch,
+          rootDir,
+          extensions,
+          debug,
+        });
+      }
+
+      await tscStaged({
+        projectDir,
+        rootDir,
+        baseBranch,
+        extensions,
+        debug,
+      });
+    }
   );
 
-  if (isEmpty(filteredTscFiles)) {
-    spinnerSuccess("No Typescript errors found!");
-    return;
-  }
-  spinnerError(`Found ${size(filteredTscFiles)} files with Typescript errors`);
-
-  updateSpinnerText(`Getting modified files from ${baseBranch} branch...`);
-  const stagedFiles = await getFilesFromGit(
-    baseBranch,
-    projectDir,
-    rootDir,
-    extensions
-  );
-  spinnerSuccess(
-    `Found ${size(stagedFiles)} modified files from ${baseBranch} branch`
-  );
-
-  const modifiedFilesWithError = intersection(stagedFiles, filteredTscFiles);
-
-  if (isEmpty(modifiedFilesWithError)) {
-    logSuccess("No modified files with Typescript errors found!");
-    return;
-  }
-
-  const modifiedFilesWithErrorCount = size(modifiedFilesWithError);
-  logError(
-    `Found ${modifiedFilesWithErrorCount} modified files with Typescript errors`
-  );
-
-  forEach(modifiedFilesWithError, (file) => {
-    logInfo(file);
-  });
-
-  process.exit(1);
-}
-
-figlet("TSC Staged", (err, data) => {
-  if (err) {
-    console.log("Something went wrong...");
-    console.dir(err);
-    return;
-  }
-
-  console.log(data);
-});
-
-main();
-
-console.log("\n");
+program.parse(process.argv);

@@ -4,7 +4,8 @@ import { logError, logInfo } from "../utils";
 
 export async function getModifiedFilesListFromGit(
   baseBranch: string,
-  projectDir?: string
+  projectDir?: string,
+  debug = false
 ) {
   const cwd = projectDir || process.cwd();
 
@@ -12,6 +13,11 @@ export async function getModifiedFilesListFromGit(
     const { stdout } = await execa("git", ["diff", "--name-only", baseBranch], {
       cwd,
     });
+
+    if (debug) {
+      logInfo(`\ngit diff --name-only ${baseBranch}`);
+      console.log(stdout, "\n");
+    }
 
     return compact(split(stdout, "\n"));
   } catch (e) {
