@@ -3,9 +3,9 @@ import figlet from "figlet";
 import { Command } from "commander";
 import { isEmpty } from "lodash-es";
 import { tscCommitted } from "./lib";
-import { logError, logInfo } from "./utils";
+import { logError, logInfo, logTitle } from "./utils";
 
-console.log(figlet.textSync("TSC Committed"));
+logTitle(figlet.textSync("TSC Committed"));
 const program = new Command("tsc-committed");
 
 program
