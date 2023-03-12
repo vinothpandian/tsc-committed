@@ -1,13 +1,14 @@
 import { execa, ExecaError } from "execa";
 import { split } from "lodash-es";
-import { logSuccess } from "../utils";
 
-export async function getTscErrorFiles() {
+export async function getTscErrorFiles(projectDir?: string) {
+  const cwd = projectDir || process.cwd();
+
   try {
-    await execa("tsc", ["--pretty"]);
+    await execa("tsc", ["--pretty"], {
+      cwd,
+    });
 
-    // If no errors are found, the command won't throw an error
-    logSuccess("No typescript errors found.");
     return [];
   } catch (e) {
     // TSC errors are printed to stdout as it is a pretty command

@@ -3,10 +3,15 @@ import { compact, split } from "lodash-es";
 import { logError, logInfo } from "../utils";
 
 export async function getModifiedFilesListFromGit(
-  baseBranch: string
-): Promise<string[]> {
+  baseBranch: string,
+  projectDir?: string
+) {
+  const cwd = projectDir || process.cwd();
+
   try {
-    const { stdout } = await execa("git", ["diff", "--name-only", baseBranch]);
+    const { stdout } = await execa("git", ["diff", "--name-only", baseBranch], {
+      cwd,
+    });
 
     return compact(split(stdout, "\n"));
   } catch (e) {

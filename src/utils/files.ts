@@ -6,7 +6,7 @@ const composeFileMatcherRegex = (rootDir: string, extensions: string[]) => {
   return `${rootDir}.*\\.(${sortedExtensions.join("|")})`;
 };
 
-export async function getFilteredGitFiles(
+export function getFilteredGitFiles(
   files: string[],
   rootDir = "src",
   extensions = ["ts", "tsx"]
@@ -17,7 +17,7 @@ export async function getFilteredGitFiles(
   return uniq(compact(filePaths));
 }
 
-export async function getFilteredTscFiles(
+export function getFilteredTscFiles(
   files: string[],
   rootDir = "src",
   extensions = ["ts", "tsx"]
