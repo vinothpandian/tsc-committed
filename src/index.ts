@@ -45,7 +45,7 @@ program
           projectDir,
           baseBranch,
           rootDir,
-          extensions,
+          extensions: extensionsString,
           debug,
         });
       }

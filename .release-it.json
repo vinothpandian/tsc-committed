@@ -5,7 +5,9 @@
   "github": {
     "release": true,
     "web": true,
-    "assets": ["dist/*"]
+    "assets": [
+      "dist/*"
+    ]
   },
   "hooks": {
     "after:bump": "pnpm build",
@@ -16,5 +18,10 @@
     "access": "public",
     "release": true,
     "skipChecks": true
+  },
+  "plugins": {
+    "@release-it/keep-a-changelog": {
+      "filename": "CHANGELOG.md"
+    }
   }
 }
