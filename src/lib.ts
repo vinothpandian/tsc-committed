@@ -14,7 +14,7 @@ import {
 } from "./utils";
 import { getModifiedFilesListFromGit, getTscErrorFiles } from "./commands";
 
-interface TscStagedArgs {
+interface TscCommittedArgs {
   baseBranch?: string;
   rootDir?: string;
   extensions?: string[];
@@ -29,7 +29,7 @@ async function getFilesFromGit({
   extensions,
   projectDir,
   debug,
-}: Required<TscStagedArgs>) {
+}: Required<TscCommittedArgs>) {
   const gitFiles = await getModifiedFilesListFromGit(
     baseBranch,
     projectDir,
@@ -47,7 +47,7 @@ async function getFilesFromTsc({
   extensions,
   projectDir,
   debug,
-}: Required<Omit<TscStagedArgs, "baseBranch">>) {
+}: Required<Omit<TscCommittedArgs, "baseBranch">>) {
   const tscFiles = await getTscErrorFiles(projectDir, debug);
 
   if (debug) {
@@ -59,13 +59,13 @@ async function getFilesFromTsc({
   return getFilteredTscFiles(tscFiles, rootDir, extensions);
 }
 
-export async function tscStaged({
+export async function tscCommitted({
   baseBranch = "main",
   rootDir = "src",
   extensions = ["ts", "tsx"],
   projectDir: dir,
   debug = false,
-}: TscStagedArgs) {
+}: TscCommittedArgs) {
   const projectDir = dir || process.cwd();
 
   updateSpinnerText("Compiling Typescript files...");
@@ -83,7 +83,7 @@ export async function tscStaged({
   spinnerError(`Found ${size(filteredTscFiles)} files with Typescript errors`);
 
   updateSpinnerText(`Getting modified files from ${baseBranch} branch...`);
-  const stagedFiles = await getFilesFromGit({
+  const committedFiles = await getFilesFromGit({
     baseBranch,
     rootDir,
     extensions,
@@ -91,10 +91,10 @@ export async function tscStaged({
     debug,
   });
   spinnerSuccess(
-    `Found ${size(stagedFiles)} modified files from ${baseBranch} branch`
+    `Found ${size(committedFiles)} modified files from ${baseBranch} branch`
   );
 
-  const modifiedFilesWithError = intersection(stagedFiles, filteredTscFiles);
+  const modifiedFilesWithError = intersection(committedFiles, filteredTscFiles);
 
   if (isEmpty(modifiedFilesWithError)) {
     logSuccess("No modified files with Typescript errors found!");

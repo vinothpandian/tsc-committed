@@ -1,15 +1,15 @@
 {
-  "name": "tsc-staged",
+  "name": "tsc-committed",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI tool to report tsc errors on committed files between base branch and feature branch in a git repo",
   "main": "dist/index.js",
   "bin": {
-    "tsc-staged": "./dist/index.js"
+    "tsc-committed": "./dist/index.js"
   },
   "type": "module",
   "scripts": {
-    "start": "tsup --watch --format cjs,esm",
-    "build": "tsup --format cjs,esm",
+    "start": "tsup --watch",
+    "build": "tsup",
     "lint": "eslint --ext .ts src",
     "format": "prettier --write src",
     "prepush": "yarn lint",

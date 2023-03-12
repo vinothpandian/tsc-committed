@@ -3,8 +3,8 @@ import { defineConfig, Options } from "tsup";
 export default defineConfig((options: Options) => {
   return {
     minify: !options.watch,
-    onSuccess: "node ./dist/index.js",
+    onSuccess: options.watch ? "node ./dist/index.js" : undefined,
     entry: ["./src/index.ts"],
-    silent: true,
+    silent: Boolean(options.watch),
   };
 });

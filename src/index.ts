@@ -2,15 +2,17 @@
 import figlet from "figlet";
 import { Command } from "commander";
 import { isEmpty } from "lodash-es";
-import { tscStaged } from "./lib";
+import { tscCommitted } from "./lib";
 import { logError, logInfo } from "./utils";
 
-console.log(figlet.textSync("TSC Staged"));
-const program = new Command("tsc-staged");
+console.log(figlet.textSync("TSC Committed"));
+const program = new Command("tsc-committed");
 
 program
-  .version("0.0.1")
-  .description("A CLI tool to report tsc errors on staged files in a git repo")
+  .version("1.0.0")
+  .description(
+    "A CLI tool to report tsc errors on committed files between base branch and feature branch in a git repo"
+  )
   .option(
     "-p, --projectDir <projectDir>",
     "Project directory - By default current directory",
@@ -38,7 +40,7 @@ program
       if (debug) {
         logInfo("Debug mode enabled");
 
-        logInfo("Arguments passed to tsc-staged:");
+        logInfo("Arguments passed to tsc-committed:");
         console.table({
           projectDir,
           baseBranch,
@@ -48,7 +50,7 @@ program
         });
       }
 
-      await tscStaged({
+      await tscCommitted({
         projectDir,
         rootDir,
         baseBranch,
