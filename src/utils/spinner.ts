@@ -5,6 +5,12 @@ const spinner = ora({
   spinner: "dots2",
 });
 
+export const stopSpinner = () => {
+  if (spinner.isSpinning) {
+    spinner.stop();
+  }
+};
+
 export const updateSpinnerText = (message: string) => {
   if (spinner.isSpinning) {
     spinner.text = message;
