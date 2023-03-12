@@ -5,13 +5,7 @@ import {
   spinnerSuccess,
   updateSpinnerText,
 } from "./utils/spinner";
-import {
-  getFilteredGitFiles,
-  getFilteredTscFiles,
-  logError,
-  logInfo,
-  logSuccess,
-} from "./utils";
+import { getFilteredFiles, logError, logInfo, logSuccess } from "./utils";
 import { getModifiedFilesListFromGit, getTscErrorFiles } from "./commands";
 
 interface TscCommittedArgs {
@@ -39,7 +33,7 @@ async function getFilesFromGit({
     logInfo(`Found ${size(gitFiles)} modified files from git before filtering`);
   }
 
-  return getFilteredGitFiles(gitFiles, rootDir, extensions);
+  return getFilteredFiles(gitFiles, rootDir, extensions, "git");
 }
 
 async function getFilesFromTsc({
@@ -56,7 +50,7 @@ async function getFilesFromTsc({
     );
   }
 
-  return getFilteredTscFiles(tscFiles, rootDir, extensions);
+  return getFilteredFiles(tscFiles, rootDir, extensions, "tsc");
 }
 
 export async function tscCommitted({

@@ -1,35 +1,30 @@
-import { compact, filter, map, sortBy, uniq } from "lodash-es";
+import { compact, map, sortBy, uniq } from "lodash-es";
 
-const composeFileMatcherRegex = (rootDir: string, extensions: string[]) => {
+const composeFileMatcherRegex = (
+  rootDir: string,
+  extensions: string[],
+  type: "git" | "tsc"
+) => {
   const sortedExtensions = sortBy(extensions, (ext) => -ext.length);
 
-  return `${rootDir}.*\\.(${sortedExtensions.join("|")})`;
+  const matcher = `${rootDir}.*\\.(${sortedExtensions.join("|")})`;
+
+  if (type === "git") {
+    return new RegExp(`^.*(${matcher})$`);
+  }
+
+  return new RegExp(`^.*(${matcher})\x1B.*$`);
 };
 
-export function getFilteredGitFiles(
+export function getFilteredFiles(
   files: string[],
   rootDir: string,
-  extensions: string[]
+  extensions: string[],
+  type: "git" | "tsc"
 ) {
-  const matcher = composeFileMatcherRegex(rootDir, extensions);
-  const regExp = new RegExp(`^${matcher}$`);
-  const filePaths = filter(files, (file) => regExp.test(file));
-  return uniq(compact(filePaths));
-}
+  const matcher = composeFileMatcherRegex(rootDir, extensions, type);
 
-export function getFilteredTscFiles(
-  files: string[],
-  rootDir: string,
-  extensions: string[]
-) {
-  const matcher = composeFileMatcherRegex(rootDir, extensions);
-
-  const extensionMatcher = new RegExp(`^.*(${matcher})\x1B.*$`, "i");
-
-  const filePaths = map(
-    files,
-    (line) => extensionMatcher.exec(line)?.[1] ?? null
-  );
+  const filePaths = map(files, (line) => matcher.exec(line)?.[1] ?? null);
 
   return uniq(compact(filePaths));
 }
