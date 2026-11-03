@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+
+overrides:
+  "micromatch@>=4 <4.0.8": "^4.0.8"
+  "yaml@>=2 <2.8.3": "^2.8.3"

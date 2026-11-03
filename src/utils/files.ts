@@ -10,7 +10,7 @@ const composeFileMatcherRegex = (
   const matcher = `${rootDir}.*\\.(${sortedExtensions.join("|")})`;
 
   if (type === "git") {
-    return new RegExp(`^.*(${matcher})$`);
+    return new RegExp(`^(${matcher})$`);
   }
 
   return new RegExp(`^.*(${matcher})\x1B.*$`);
