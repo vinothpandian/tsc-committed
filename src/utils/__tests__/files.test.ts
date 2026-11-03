@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFilteredGitFiles, getFilteredTscFiles } from "../files";
+import { getFilteredFiles } from "../files";
 
 describe("git", () => {
   const MODIFIED_FILES = [
@@ -10,15 +10,17 @@ describe("git", () => {
   ];
 
   it("getModifiedFiles only ts from src folder", async () => {
-    const files = await getFilteredGitFiles(MODIFIED_FILES, "src", ["ts"]);
+    const files = await getFilteredFiles(MODIFIED_FILES, "src", ["ts"], "git");
     expect(files).toEqual(["src/utils/__tests__/files.test.ts"]);
   });
 
   it("getModifiedFiles ts and tsx from src folder", async () => {
-    const files = await getFilteredGitFiles(MODIFIED_FILES, "src", [
-      "ts",
-      "tsx",
-    ]);
+    const files = await getFilteredFiles(
+      MODIFIED_FILES,
+      "src",
+      ["ts", "tsx"],
+      "git"
+    );
     expect(files).toEqual([
       "src/utils/__tests__/files.test.ts",
       "src/utils/git.tsx",
@@ -26,7 +28,12 @@ describe("git", () => {
   });
 
   it("getModifiedFiles with different matcher", async () => {
-    const files = await getFilteredGitFiles(MODIFIED_FILES, "");
+    const files = await getFilteredFiles(
+      MODIFIED_FILES,
+      "",
+      ["ts", "tsx"],
+      "git"
+    );
     expect(files).toEqual([
       "src/utils/__tests__/files.test.ts",
       "src/utils/git.tsx",
@@ -56,7 +63,12 @@ describe("tsc", () => {
   const SINGLE_TSC_ERROR_LINES = ["src/index.ts\x1B[90m:18\x1B[0m", ""];
 
   it("getFilteredTscFiles", async () => {
-    const files = await getFilteredTscFiles(TSC_FILES, "app", ["ts", "tsx"]);
+    const files = await getFilteredFiles(
+      TSC_FILES,
+      "app",
+      ["ts", "tsx"],
+      "tsc"
+    );
     expect(files).toEqual([
       "app/entry.client.tsx",
       "app/entry.server.tsx",
@@ -70,20 +82,22 @@ describe("tsc", () => {
   });
 
   it("getFilteredTscFiles in app folder", async () => {
-    const files = await getFilteredTscFiles(TSC_FILES, "app", ["ts"]);
+    const files = await getFilteredFiles(TSC_FILES, "app", ["ts"], "tsc");
     expect(files).toEqual([]);
   });
 
   it("getFilteredTscFiles in root with only ts", async () => {
-    const files = await getFilteredTscFiles(TSC_FILES, "prisma", ["ts"]);
+    const files = await getFilteredFiles(TSC_FILES, "prisma", ["ts"], "tsc");
     expect(files).toEqual(["prisma/seed.ts"]);
   });
 
   it("getFilteredTscFiles in single errors", async () => {
-    const files = await getFilteredTscFiles(SINGLE_TSC_ERROR_LINES, "src", [
-      "ts",
-      "tsx",
-    ]);
+    const files = await getFilteredFiles(
+      SINGLE_TSC_ERROR_LINES,
+      "src",
+      ["ts", "tsx"],
+      "tsc"
+    );
     expect(files).toEqual(["src/index.ts"]);
   });
 });
